@@ -7,5 +7,6 @@ My solutions to the [AOC 2021](https://adventofcode.com/2021) problems in [Rust]
 | Task | Status |
 | ---- | :----: |
 | Day 1 | :heavy_check_mark:, :heavy_check_mark: |
+| Day 2 | :heavy_check_mark:, :heavy_check_mark: |
 
 ***
