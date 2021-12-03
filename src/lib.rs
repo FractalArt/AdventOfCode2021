@@ -11,6 +11,7 @@ use std::io::{self, prelude::*, BufReader};
 use std::path::Path;
 
 pub mod day_01;
+pub mod day_02;
 
 /// Read the data from the input file.
 ///
