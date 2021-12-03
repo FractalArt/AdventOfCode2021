@@ -40,6 +40,38 @@ pub fn day_3_1(data: &[String]) -> usize {
     gamma * epsilon
 }
 
+// Get the index of the only remaining allowed element in the hashmap
+fn get_hashmap_index(map: &HashMap<usize, bool>) -> usize {
+    map.iter()
+        .skip_while(|(_, &b)| !b)
+        .map(|(&i, _)| i)
+        .next()
+        .unwrap()
+}
+
+// Get integer from array of bites
+fn get_int_from_bit_array(bitvec: &[usize]) -> usize {
+    bitvec
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(pow, bit)| bit * 2usize.pow(pow as u32))
+        .sum()
+}
+
+// Get the number of available numbers and the sum of the contents of their `n`th bit
+fn get_available_and_sum(
+    numbers: &Vec<Vec<usize>>,
+    map: &HashMap<usize, bool>,
+    n: usize,
+) -> (usize, usize) {
+    map.iter()
+        .filter(|(_, &flag)| flag)
+        .enumerate()
+        .map(|(index, (&i, _))| (index, numbers[i][n]))
+        .fold((0, 0), |(_, sum), (index, n)| (index + 1, sum + n))
+}
+
 /// Solution of day 3 part 2.
 pub fn day_3_2(data: &[String]) -> usize {
     // First parse the data
@@ -48,28 +80,24 @@ pub fn day_3_2(data: &[String]) -> usize {
         .map(|s| s.chars().map(|c| if c == '0' { 0 } else { 1 }).collect())
         .collect();
 
-    let entries = numbers.len();
-    let bits = numbers[0].len();
-
-    let mut avail_o2 = entries;
-    let mut avail_co2 = entries;
     let mut final_o2: Option<usize> = None;
     let mut final_co2: Option<usize> = None;
 
-    let mut available_o2_map = (0..entries).map(|i| (i, true)).collect::<HashMap<_, _>>();
-    let mut available_co2_map = (0..entries).map(|i| (i, true)).collect::<HashMap<_, _>>();
+    let mut available_o2_map = (0..numbers.len())
+        .map(|i| (i, true))
+        .collect::<HashMap<_, _>>();
+    let mut available_co2_map = (0..numbers.len())
+        .map(|i| (i, true))
+        .collect::<HashMap<_, _>>();
 
     // For each bit check which bit appears more often and store the indices
-    for bit in 0..bits {
+    let mut bit = 0;
+    while final_o2.is_none() || final_co2.is_none() {
         // Only do this if o2 was not found yet
-        if avail_o2 > 1 {
+        if final_o2.is_none() {
             // Count sum of bits in the available numbers
-            let (available, sum): (usize, usize) = available_o2_map
-                .iter()
-                .filter(|(_, &flag)| flag)
-                .enumerate()
-                .map(|(index, (&i, _))| (index, numbers[i][bit]))
-                .fold((0, 0), |(_, sum), (index, n)| (index + 1, sum + n));
+            let (available, sum) = get_available_and_sum(&numbers, &available_o2_map, bit);
+            let avail_o2 = std::cmp::max(sum, available - sum);
 
             // 1 is dominant, remove all with 0 in that bit from available o2
             if 2 * sum >= available {
@@ -78,26 +106,26 @@ pub fn day_3_2(data: &[String]) -> usize {
                         *available_o2_map.get_mut(&i).unwrap() = false;
                     }
                 });
-                avail_o2 = sum;
             } else {
                 numbers.iter().enumerate().for_each(|(i, v)| {
                     if v[bit] != 0 {
                         *available_o2_map.get_mut(&i).unwrap() = false;
                     }
                 });
-                avail_o2 = available - sum;
+            }
+
+            if avail_o2 == 1 {
+                let index = get_hashmap_index(&available_o2_map);
+                final_o2 = Some(get_int_from_bit_array(&numbers[index]));
             }
         }
 
         // Only do this if co2 was not found yet
-        if avail_co2 > 1 {
+        if final_co2.is_none() {
             // Count sum of bits in the available numbers
-            let (available, sum): (usize, usize) = available_co2_map
-                .iter()
-                .filter(|(_, &flag)| flag)
-                .enumerate()
-                .map(|(index, (&i, _))| (index, numbers[i][bit]))
-                .fold((0, 0), |(_, sum), (index, n)| (index + 1, sum + n));
+            let (available, sum): (usize, usize) =
+                get_available_and_sum(&numbers, &available_co2_map, bit);
+            let avail_co2 = std::cmp::min(sum, available - sum);
 
             // 1 is dominant, remove all with 1 in that bit from available co2
             if 2 * sum >= available {
@@ -106,54 +134,21 @@ pub fn day_3_2(data: &[String]) -> usize {
                         *available_co2_map.get_mut(&i).unwrap() = false;
                     }
                 });
-                avail_co2 = available - sum;
             } else {
                 numbers.iter().enumerate().for_each(|(i, v)| {
                     if v[bit] != 1 {
                         *available_co2_map.get_mut(&i).unwrap() = false;
                     }
                 });
-                avail_co2 = sum;
+            }
+
+            if avail_co2 == 1 {
+                let index = get_hashmap_index(&available_co2_map);
+                final_co2 = Some(get_int_from_bit_array(&numbers[index]));
             }
         }
 
-        if avail_o2 == 1 && final_o2.is_none() {
-            let index = available_o2_map
-                .iter()
-                .skip_while(|(_, &b)| !b)
-                .map(|(&i, _)| i)
-                .next()
-                .unwrap();
-            final_o2 = Some(
-                numbers[index]
-                    .iter()
-                    .rev()
-                    .enumerate()
-                    .map(|(pow, bit)| bit * 2usize.pow(pow as u32))
-                    .sum(),
-            );
-        }
-
-        if avail_co2 == 1 && final_co2.is_none() {
-            let index = available_co2_map
-                .iter()
-                .skip_while(|(_, &b)| !b)
-                .map(|(&i, _)| i)
-                .next()
-                .unwrap();
-            final_co2 = Some(
-                numbers[index]
-                    .iter()
-                    .rev()
-                    .enumerate()
-                    .map(|(pow, bit)| bit * 2usize.pow(pow as u32))
-                    .sum(),
-            );
-        }
-
-        if final_o2.is_some() && final_co2.is_some() {
-            break;
-        }
+        bit += 1;
     }
 
     final_co2.unwrap() * final_o2.unwrap()
