@@ -63,6 +63,15 @@ impl Board {
     }
 }
 
+/// Extract a vector of `Board`s from the input
+fn get_boards_from_input(input: &[String]) -> Vec<Board> {
+    input[2..]
+        .chunks(6)
+        .map(|chunk| chunk.into_iter().cloned().take(5).collect::<Vec<String>>())
+        .map(|v| Board::from_string_rows(&v))
+        .collect()
+}
+
 /// Find the winning board.
 ///
 /// The function takes the lines from the input and constructs the bingo boards,
@@ -70,12 +79,7 @@ impl Board {
 /// As soon as one board wins, the product of the sum of its unmarked numbers and
 /// the last called number that lead to the win is returned.
 pub fn day_4_1(string_rows: &[String]) -> usize {
-    // First collect all the boards
-    let boards: Vec<Board> = string_rows[2..]
-        .chunks(6)
-        .map(|chunk| chunk.into_iter().cloned().take(5).collect::<Vec<String>>())
-        .map(|v| Board::from_string_rows(&v))
-        .collect();
+    let boards: Vec<Board> = get_boards_from_input(string_rows);
 
     for called_number in string_rows[0]
         .split(',')
@@ -90,6 +94,41 @@ pub fn day_4_1(string_rows: &[String]) -> usize {
     }
 
     panic!("No board won!");
+}
+
+/// Find the board that wins last.
+///
+/// The function takes the lines from the input and constructs the bingo boards,
+/// After that, the called numbers are marked on the bingo boards, one after the other.
+/// As soon as one board wins, the product of the sum of its unmarked numbers and
+/// the last called number that lead to the win is returned. We repeat until, we find the last board.
+pub fn day_4_2(string_rows: &[String]) -> usize {
+    // First collect all the boards
+    let boards: Vec<Board> = get_boards_from_input(string_rows);
+
+    let mut boards_in_game = vec![true; boards.len()];
+
+    for called_number in string_rows[0]
+        .split(',')
+        .map(|s| s.parse::<usize>().unwrap())
+    {
+        for (board_index, board) in boards.iter().enumerate() {
+            if !boards_in_game[board_index] {
+                continue;
+            }
+            match board.mark_number(called_number) {
+                None => continue,
+                Some(result) => {
+                    boards_in_game[board_index] = false;
+                    if boards_in_game.iter().all(|b| !b) {
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+
+    panic!("Not all boards won!");
 }
 
 #[cfg(test)]
@@ -146,5 +185,32 @@ mod tests {
         ];
 
         assert_eq!(day_4_1(&input), 4512);
+    }
+
+    #[test]
+    fn test_day_4_2() {
+        let input = vec![
+            "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1".to_string(),
+            "".to_string(),
+            "22 13 17 11  0".to_string(),
+            " 8  2 23  4 24".to_string(),
+            "21  9 14 16  7".to_string(),
+            " 6 10  3 18  5".to_string(),
+            " 1 12 20 15 19".to_string(),
+            "".to_string(),
+            " 3 15  0  2 22".to_string(),
+            " 9 18 13 17  5".to_string(),
+            "19  8  7 25 23".to_string(),
+            "20 11 10 24  4".to_string(),
+            "14 21 16 12  6".to_string(),
+            "".to_string(),
+            "14 21 17 24  4".to_string(),
+            "10 16 15  9 19".to_string(),
+            "18  8 23 26 20".to_string(),
+            "22 11 13  6  5".to_string(),
+            " 2  0 12  3  7".to_string(),
+        ];
+
+        assert_eq!(day_4_2(&input), 1924);
     }
 }
