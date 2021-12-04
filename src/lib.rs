@@ -13,6 +13,7 @@ use std::path::Path;
 pub mod day_01;
 pub mod day_02;
 pub mod day_03;
+pub mod day_04;
 
 /// Read the data from the input file.
 ///
