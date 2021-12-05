@@ -3,7 +3,7 @@
 //! This module contains the solution of the [fifth day's challenges](https://adventofcode.com/2021/day/5).
 use ndarray::Array2;
 use regex::Regex;
-use std::cmp::{min, max};
+use std::cmp::{max, min};
 
 lazy_static::lazy_static! {
     static ref RE: Regex = Regex::new(r"^(\d*),(\d*) -> (\d*),(\d*)$").unwrap();
@@ -24,7 +24,7 @@ type Line = ((usize, usize), (usize, usize));
 /// ```sh
 /// ((1, 2),(33, 44))
 /// ```
-fn get_coordinates(s: &str) -> ((usize, usize), (usize, usize)) {
+fn get_coordinates(s: &str) -> Line {
     let captures = RE.captures(s).unwrap();
     (
         (
@@ -39,6 +39,7 @@ fn get_coordinates(s: &str) -> ((usize, usize), (usize, usize)) {
 }
 
 /// Number of points in the cartesian plane where more than one horizontal or vertical segments pass.
+/// If `include_diagonal=true` then also diagonals are included.
 pub fn day_5(data: &[String], include_diagonal: bool) -> usize {
     // parse the input
     let lines: Vec<Line> = data.iter().map(|s| get_coordinates(s)).collect();
@@ -47,16 +48,14 @@ pub fn day_5(data: &[String], include_diagonal: bool) -> usize {
         .iter()
         .map(|((x1, _), (x2, _))| max(x1, x2))
         .max()
-        .unwrap()
-        + 1;
+        .unwrap();
     let y_max = *lines
         .iter()
         .map(|((_, y1), (_, y2))| max(y1, y2))
         .max()
-        .unwrap()
-        + 1;
-    // create the grid
-    let mut grid = Array2::from_elem((y_max, x_max), 0);
+        .unwrap();
+    // create the grid (+1, because 0 is included at the beginning)
+    let mut grid = Array2::from_elem((y_max + 1, x_max + 1), 0);
     // update the grid
     for line in lines {
         let ((x1, y1), (x2, y2)) = line;
@@ -69,17 +68,16 @@ pub fn day_5(data: &[String], include_diagonal: bool) -> usize {
                 grid[[y1, x]] += 1;
             }
         } else if include_diagonal {
-            let mut xx = x1 as isize;
-            let mut yy = y1 as isize;
-            let x_steps = (x2 as isize - x1 as isize).abs();
-            let x_step = (x2 as isize - x1 as isize) / x_steps;
-            let y_steps = (y2 as isize - y1 as isize).abs();
-            let y_step = (y2 as isize - y1 as isize) / y_steps;
-            for _ in 0..=x_steps {
-                grid[[yy as usize, xx as usize]] += 1;
-                xx += x_step;
-                yy += y_step;
-             }
+            let mut x = x1 as isize;
+            let mut y = y1 as isize;
+            let steps = (x2 as isize - x1 as isize).abs();
+            let x_step = (x2 as isize - x1 as isize) / steps;
+            let y_step = (y2 as isize - y1 as isize) / steps;
+            for _ in 0..=steps {
+                grid[[y as usize, x as usize]] += 1;
+                x += x_step;
+                y += y_step;
+            }
         } else {
             continue;
         }
