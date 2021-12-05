@@ -1,7 +1,6 @@
 //! # Advent of Code 2021 - Day 4
 //!
 //! This module contains the solution of the [fourth day's challenges](https://adventofcode.com/2021/day/4).
-
 use ndarray::Array2;
 use std::cell::RefCell;
 
