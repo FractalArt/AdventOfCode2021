@@ -61,7 +61,7 @@ fn get_int_from_bit_array(bitvec: &[usize]) -> usize {
 
 // Get the number of available numbers and the sum of the contents of their `n`th bit
 fn get_available_and_sum(
-    numbers: &Vec<Vec<usize>>,
+    numbers: &[Vec<usize>],
     map: &HashMap<usize, bool>,
     n: usize,
 ) -> (usize, usize) {

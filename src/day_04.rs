@@ -66,7 +66,7 @@ impl Board {
 fn get_boards_from_input(input: &[String]) -> Vec<Board> {
     input[2..]
         .chunks(6)
-        .map(|chunk| chunk.into_iter().cloned().take(5).collect::<Vec<String>>())
+        .map(|chunk| chunk.iter().cloned().take(5).collect::<Vec<String>>())
         .map(|v| Board::from_string_rows(&v))
         .collect()
 }
