@@ -10,6 +10,6 @@ My solutions to the [AOC 2021](https://adventofcode.com/2021) problems in [Rust]
 | Day 2 | :heavy_check_mark:, :heavy_check_mark: |
 | Day 3 | :heavy_check_mark:, :heavy_check_mark: |
 | Day 4 | :heavy_check_mark:, :heavy_check_mark: |
-| Day 5 | :heavy_check_mark:, :x: |
+| Day 5 | :heavy_check_mark:, :heavy_check_mark: |
 
 ***

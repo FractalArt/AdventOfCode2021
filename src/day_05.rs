@@ -3,6 +3,7 @@
 //! This module contains the solution of the [fifth day's challenges](https://adventofcode.com/2021/day/5).
 use ndarray::Array2;
 use regex::Regex;
+use std::cmp::{min, max};
 
 lazy_static::lazy_static! {
     static ref RE: Regex = Regex::new(r"^(\d*),(\d*) -> (\d*),(\d*)$").unwrap();
@@ -38,19 +39,19 @@ fn get_coordinates(s: &str) -> ((usize, usize), (usize, usize)) {
 }
 
 /// Number of points in the cartesian plane where more than one horizontal or vertical segments pass.
-pub fn day_5_1(data: &[String]) -> usize {
+pub fn day_5(data: &[String], include_diagonal: bool) -> usize {
     // parse the input
     let lines: Vec<Line> = data.iter().map(|s| get_coordinates(s)).collect();
     // determine the dimensions of the grid
     let x_max = *lines
         .iter()
-        .map(|((x1, _), (x2, _))| std::cmp::max(x1, x2))
+        .map(|((x1, _), (x2, _))| max(x1, x2))
         .max()
         .unwrap()
         + 1;
     let y_max = *lines
         .iter()
-        .map(|((_, y1), (_, y2))| std::cmp::max(y1, y2))
+        .map(|((_, y1), (_, y2))| max(y1, y2))
         .max()
         .unwrap()
         + 1;
@@ -60,13 +61,25 @@ pub fn day_5_1(data: &[String]) -> usize {
     for line in lines {
         let ((x1, y1), (x2, y2)) = line;
         if x1 == x2 {
-            for y in std::cmp::min(y1, y2)..=std::cmp::max(y1, y2) {
+            for y in min(y1, y2)..=max(y1, y2) {
                 grid[[y, x1]] += 1;
             }
         } else if y1 == y2 {
-            for x in std::cmp::min(x1, x2)..=std::cmp::max(x1, x2) {
+            for x in min(x1, x2)..=max(x1, x2) {
                 grid[[y1, x]] += 1;
             }
+        } else if include_diagonal {
+            let mut xx = x1 as isize;
+            let mut yy = y1 as isize;
+            let x_steps = (x2 as isize - x1 as isize).abs();
+            let x_step = (x2 as isize - x1 as isize) / x_steps;
+            let y_steps = (y2 as isize - y1 as isize).abs();
+            let y_step = (y2 as isize - y1 as isize) / y_steps;
+            for _ in 0..=x_steps {
+                grid[[yy as usize, xx as usize]] += 1;
+                xx += x_step;
+                yy += y_step;
+             }
         } else {
             continue;
         }
@@ -98,6 +111,23 @@ mod tests {
             "0,0 -> 8,8".to_string(),
             "5,5 -> 8,2".to_string(),
         ];
-        assert_eq!(day_5_1(&input), 5);
+        assert_eq!(day_5(&input, false), 5);
+    }
+
+    #[test]
+    fn test_day_5_2() {
+        let input = vec![
+            "0,9 -> 5,9".to_string(),
+            "8,0 -> 0,8".to_string(),
+            "9,4 -> 3,4".to_string(),
+            "2,2 -> 2,1".to_string(),
+            "7,0 -> 7,4".to_string(),
+            "6,4 -> 2,0".to_string(),
+            "0,9 -> 2,9".to_string(),
+            "3,4 -> 1,4".to_string(),
+            "0,0 -> 8,8".to_string(),
+            "5,5 -> 8,2".to_string(),
+        ];
+        assert_eq!(day_5(&input, true), 12);
     }
 }
