@@ -13,22 +13,25 @@
 /// Hence the number of animals for timer 6 on day `n+1` corresponds to the number of animals for timer 7 on day `n`, plus the
 /// number of animals on timer 0 on day `n`.
 pub fn day_6(data: &[String], days: usize) -> usize {
-    let mut animals_per_timer: Vec<usize> = data.iter()
+    let mut animals_per_timer: Vec<usize> = data
+        .iter()
         .flat_map(|v| v.split(','))
         .map(|c| c.parse::<usize>().unwrap())
-        .fold(vec![0; 9], |mut acc, i| {acc[i] += 1; acc});
+        .fold(vec![0; 9], |mut acc, i| {
+            acc[i] += 1;
+            acc
+        });
 
     for _ in 0..days {
         let zero = animals_per_timer[0];
         for i in 1..=8 {
-            animals_per_timer[i-1] = animals_per_timer[i];
+            animals_per_timer[i - 1] = animals_per_timer[i];
         }
         animals_per_timer[8] = zero;
         animals_per_timer[6] += zero;
     }
 
     animals_per_timer.iter().sum()
-
 }
 
 #[cfg(test)]
@@ -45,7 +48,6 @@ mod tests {
     #[test]
     fn test_day_6_2() {
         let input = vec!["3,4,3,1,2".to_string()];
-         assert_eq!(day_6(&input, 256), 26984457539);
+        assert_eq!(day_6(&input, 256), 26984457539);
     }
-
 }
