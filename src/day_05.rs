@@ -1,4 +1,4 @@
-//! # Advent of Code 2021 - Day 4
+//! # Advent of Code 2021 - Day 5
 //!
 //! This module contains the solution of the [fifth day's challenges](https://adventofcode.com/2021/day/5).
 use ndarray::Array2;
