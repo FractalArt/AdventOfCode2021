@@ -4,7 +4,7 @@
 
 /// The sum of the integers from 1 to `x`.
 fn gauss(x: isize) -> isize {
-    x*(x + 1) / 2
+    x * (x + 1) / 2
 }
 
 /// Compute the minimal amount of fuel required to align the crabs at one horizontal position.
