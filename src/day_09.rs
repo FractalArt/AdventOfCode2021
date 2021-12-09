@@ -3,6 +3,25 @@
 //! This module contains the solution of the [nineth day's challenges](https://adventofcode.com/2021/day/9).
 use itertools::Itertools;
 
+/// Check if a point is a low point
+fn is_low_point(
+    row: isize,
+    col: isize,
+    rows: usize,
+    cols: usize,
+    array: &ndarray::Array2<u32>,
+) -> bool {
+    [
+        (row - 1, col),
+        (row, col - 1),
+        (row, col + 1),
+        (row + 1, col),
+    ]
+    .iter()
+    .filter(|(r, c)| r >= &0 && c >= &0 && *r < rows as isize && *c < cols as isize)
+    .all(|(r, c)| array[[row as usize, col as usize]] < array[[*r as usize, *c as usize]])
+}
+
 /// Compute the sum of the risk levels of the low points in the area.
 ///
 /// The risk level of each point is given by its height plus `1`.
@@ -21,17 +40,7 @@ pub fn day_9_1(data: &[String]) -> u32 {
     (0..rows as isize)
         .cartesian_product(0..cols as isize)
         // for each row and col loop over adjacent and keep only those that are minimal
-        .filter(|(row, col)| {
-            [
-                (*row - 1, *col),
-                (*row, *col - 1),
-                (*row, *col + 1),
-                (*row + 1, *col),
-            ]
-            .iter()
-            .filter(|(r, c)| r >= &0 && c >= &0 && *r < rows as isize && *c < cols as isize)
-            .all(|(r, c)| array[[*row as usize, *col as usize]] < array[[*r as usize, *c as usize]])
-        })
+        .filter(|(row, col)| is_low_point(*row, *col, rows, cols, &array))
         .map(|(row, col)| array[[row as usize, col as usize]] + 1)
         .sum()
 }
