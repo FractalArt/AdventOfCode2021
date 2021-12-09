@@ -49,6 +49,9 @@ fn map_basin(
     array: &Array2<u32>,
     mut tracker: &mut Array2<u32>,
 ) {
+    // Point itself belongs to basin
+    *tracker.get_mut([row as usize, col as usize]).unwrap() = 1;
+
     // Look at the adjacent positions and see if they belong to the position
     [
         (row - 1, col),
@@ -91,7 +94,6 @@ pub fn day_9_2(data: &[String]) -> u32 {
         .map(|(row, col)| {
             // Create an array, tracking which fields already belong to the basin
             let mut tracker = Array2::from_elem((rows, cols), 0);
-            *tracker.get_mut([row as usize, col as usize]).unwrap() = 1;
             map_basin(row, col, rows, cols, &array, &mut tracker);
             tracker.iter().sum::<u32>()
         })
@@ -142,14 +144,12 @@ mod tests {
         let row = 0;
         let col = 1;
         let mut tracker = Array2::from_elem((rows, cols), 0);
-        *tracker.get_mut([row as usize, col as usize]).unwrap() = 1;
         map_basin(row, col, rows, cols, &array, &mut tracker);
         assert_eq!(tracker.iter().sum::<u32>(), 3);
 
         let row = 0;
         let col = 9;
         let mut tracker = Array2::from_elem((rows, cols), 0);
-        *tracker.get_mut([row as usize, col as usize]).unwrap() = 1;
         map_basin(row, col, rows, cols, &array, &mut tracker);
         assert_eq!(tracker.iter().sum::<u32>(), 9);
     }
