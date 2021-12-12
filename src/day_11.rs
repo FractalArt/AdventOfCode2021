@@ -36,6 +36,7 @@ fn flash(
     }
 }
 
+/// Count the number of flashes occuring in `steps` steps.
 pub fn day_11_1(data: &[String], steps: usize) -> usize {
     // Parse the input data into an array
     let mut array = Array::from_iter(
