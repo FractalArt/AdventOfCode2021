@@ -90,7 +90,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_day_10_1() {
+    fn test_day_11_1() {
         let input = vec![
             "5483143223".to_string(),
             "2745854711".to_string(),
