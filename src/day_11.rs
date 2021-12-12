@@ -78,8 +78,6 @@ pub fn day_11_1(data: &[String], steps: usize) -> usize {
                 array[[row, col]] = 0;
             }
         }
-
-        println!("{:?}", array);
     }
 
     flashes
