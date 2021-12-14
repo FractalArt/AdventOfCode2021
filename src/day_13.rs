@@ -38,23 +38,52 @@ fn fold(dots: Vec<(isize, isize)>, axis: &FoldAxis) -> Vec<(isize, isize)> {
     match &axis {
         FoldAxis::X(z) => dots
             .into_iter()
-            .map(|(x, y)| ((x - z).abs(), y))
+            // .map(|(x, y)| ( (x - *z).abs() - 1 , y))
+            .map(|(x, y)| (if x < *z { x } else { z - (x - z) }, y))
             .sorted()
             .dedup()
             .collect(),
         FoldAxis::Y(z) => dots
             .into_iter()
-            .map(|(x, y)| (x, if y < *z { y } else { z - (y - z).abs() }))
+            .map(|(x, y)| (x, if y < *z { y } else { z - (y - z) }))
             .sorted()
             .dedup()
             .collect(),
     }
 }
 
-/// Count the number of visible dots on the transparent paper after the first fold
+/// Count the number of visible dots on the transparent paper after the first fold.
 pub fn day_13_1(data: &[String]) -> usize {
     let (dots, axes) = get_dots_and_fold_axes(data);
     fold(dots, &axes[0]).iter().count()
+}
+
+/// Get the password after all the folds.
+pub fn day_13_2(data: &[String]) -> String {
+    let (dots, axes) = get_dots_and_fold_axes(data);
+    let output = axes.iter().fold(dots, |acc, ax| fold(acc, &ax));
+    let (xmax, ymax) = output.iter().last().unwrap();
+
+    let mut chars = vec![];
+
+    for y in 0..=*ymax {
+        for x in 0..=*xmax {
+            if output
+                .iter()
+                .find(|(xx, yy)| *xx == x && *yy == y)
+                .is_some()
+            {
+                chars.push("#")
+            } else {
+                chars.push(".")
+            }
+        }
+        if y != *ymax {
+            chars.push("\n");
+        }
+    }
+
+    chars.join("")
 }
 
 #[cfg(test)]
@@ -163,5 +192,37 @@ mod tests {
         ];
 
         assert_eq!(day_13_1(&data), 17);
+    }
+
+    #[test]
+    fn test_day_13_2() {
+        let data = vec![
+            "6,10".to_string(),
+            "0,14".to_string(),
+            "9,10".to_string(),
+            "0,3".to_string(),
+            "10,4".to_string(),
+            "4,11".to_string(),
+            "6,0".to_string(),
+            "6,12".to_string(),
+            "4,1".to_string(),
+            "0,13".to_string(),
+            "10,12".to_string(),
+            "3,4".to_string(),
+            "3,0".to_string(),
+            "8,4".to_string(),
+            "1,10".to_string(),
+            "2,14".to_string(),
+            "8,10".to_string(),
+            "9,0".to_string(),
+            "".to_string(),
+            "fold along y=7".to_string(),
+            "fold along x=5".to_string(),
+        ];
+
+        assert_eq!(
+            day_13_2(&data),
+            "#####\n#...#\n#...#\n#...#\n#####".to_string()
+        );
     }
 }
