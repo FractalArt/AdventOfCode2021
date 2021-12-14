@@ -18,5 +18,6 @@ My solutions to the [AOC 2021](https://adventofcode.com/2021) problems in [Rust]
 | Day 10 | :x:, :x: |
 | Day 11 | :heavy_check_mark:, :heavy_check_mark: |
 | Day 12 | :x:, :x: |
+| Day 13 | :heavy_check_mark:, :x: |
 
 ***
