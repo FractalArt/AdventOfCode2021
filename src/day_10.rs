@@ -1,65 +1,50 @@
 //! # Advent of Code 2021 - Day 10
 //!
 //! This module contains the solution of the [tenth day's challenges](https://adventofcode.com/2021/day/10).
+use std::collections::VecDeque;
 
-#[derive(Default, Debug)]
-struct BracketCounters {
-    round: isize,
-    square: isize,
-    curly: isize,
-    angle: isize,
-}
-
-impl BracketCounters {
-    fn counter_sum(&self) -> isize {
-        self.round + self.square + self.curly + self.angle
-    }
-}
-
+/// Check if the `line` is corrupted.
 fn is_corrupted(line: &str) -> Option<char> {
-    let mut bracket_counters = BracketCounters::default();
-    println!("{:?}", &bracket_counters);
-    for c in line.chars() {
-        println!("{:?}", &bracket_counters);
-        let sum = bracket_counters.counter_sum();
-        match c {
-            '(' => bracket_counters.round += 1,
+    let mut queue: VecDeque<_> = VecDeque::new();
+
+    for char in line.chars() {
+        match char {
+            '(' | '[' | '{' | '<' => queue.push_back(char),
             ')' => {
-                if bracket_counters.round == 1 && sum == 1 {
-                    return Some(')');
+                if queue.get(queue.len() - 1) == Some(&'(') {
+                    queue.pop_back();
                 } else {
-                    bracket_counters.round -= 1;
+                    return Some(char);
                 }
             }
-            '[' => bracket_counters.square += 1,
             ']' => {
-                if bracket_counters.square == 0 {
-                    return Some(']');
+                if queue.get(queue.len() - 1) == Some(&'[') {
+                    queue.pop_back();
                 } else {
-                    bracket_counters.square -= 1;
+                    return Some(char);
                 }
             }
-            '{' => bracket_counters.curly += 1,
             '}' => {
-                if bracket_counters.curly == 1 && sum == 1 {
-                    return Some('}');
+                if queue.get(queue.len() - 1) == Some(&'{') {
+                    queue.pop_back();
                 } else {
-                    bracket_counters.curly -= 1;
+                    return Some(char);
                 }
             }
-            '<' => bracket_counters.angle += 1,
             _ => {
-                if bracket_counters.angle == 1 && sum == 1 {
-                    return Some('>');
+                if queue.get(queue.len() - 1) == Some(&'<') {
+                    queue.pop_back();
                 } else {
-                    bracket_counters.angle -= 1;
+                    return Some(char);
                 }
             }
         }
     }
+
     None
 }
 
+/// Find the first illegal character in each line and compute the sum of their scores.
 pub fn day_10_1(data: &[String]) -> isize {
     data.iter()
         .filter_map(|line| is_corrupted(line))
@@ -79,28 +64,28 @@ pub fn day_10_1(data: &[String]) -> isize {
 #[cfg(test)]
 mod tests {
 
-    // use super::*;
+    use super::*;
 
-    // #[test]
-    // fn test_is_corrupted() {
-    //     assert_eq!(is_corrupted("{([(<{}[<>[]}>{[]{[(<()>"), Some('}'));
-    // }
+    #[test]
+    fn test_is_corrupted() {
+        assert_eq!(is_corrupted("{([(<{}[<>[]}>{[]{[(<()>"), Some('}'));
+    }
 
-    // #[test]
-    // fn test_day_10_1() {
-    //     let input = vec![
-    //         "[({(<(())[]>[[{[]{<()<>>".to_string(),
-    //         "[(()[<>])]({[<{<<[]>>(".to_string(),
-    //         "{([(<{}[<>[]}>{[]{[(<()>".to_string(),
-    //         "(((({<>}<{<{<>}{[]{[]{}".to_string(),
-    //         "[[<[([]))<([[{}[[()]]]".to_string(),
-    //         "[{[{({}]{}}([{[{{{}}([]".to_string(),
-    //         "{<[[]]>}<{[{[{[]{()[[[]".to_string(),
-    //         "[<(<(<(<{}))><([]([]()".to_string(),
-    //         "<{([([[(<>()){}]>(<<{{".to_string(),
-    //         "<{([{{}}[<[[[<>{}]]]>[]]".to_string(),
-    //     ];
+    #[test]
+    fn test_day_10_1() {
+        let input = vec![
+            "[({(<(())[]>[[{[]{<()<>>".to_string(),
+            "[(()[<>])]({[<{<<[]>>(".to_string(),
+            "{([(<{}[<>[]}>{[]{[(<()>".to_string(),
+            "(((({<>}<{<{<>}{[]{[]{}".to_string(),
+            "[[<[([]))<([[{}[[()]]]".to_string(),
+            "[{[{({}]{}}([{[{{{}}([]".to_string(),
+            "{<[[]]>}<{[{[{[]{()[[[]".to_string(),
+            "[<(<(<(<{}))><([]([]()".to_string(),
+            "<{([([[(<>()){}]>(<<{{".to_string(),
+            "<{([{{}}[<[[[<>{}]]]>[]]".to_string(),
+        ];
 
-    //     assert_eq!(day_10_1(&input), 26397)
-    // }
+        assert_eq!(day_10_1(&input), 26397)
+    }
 }
