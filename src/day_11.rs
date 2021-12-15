@@ -9,8 +9,8 @@ fn flash(
     col: usize,
     rows: usize,
     cols: usize,
-    mut array: &mut Array2<u32>,
-    mut tracker: &mut Array2<usize>,
+    array: &mut Array2<u32>,
+    tracker: &mut Array2<usize>,
 ) {
     if tracker[[row, col]] == 0 {
         // Make the element flash
@@ -30,7 +30,7 @@ fn flash(
             .for_each(|(r, c)| {
                 array[[r as usize, c as usize]] += 1;
                 if array[[r as usize, c as usize]] > 9 {
-                    flash(r as usize, c as usize, rows, cols, &mut array, &mut tracker);
+                    flash(r as usize, c as usize, rows, cols, array, tracker);
                 }
             })
     }
@@ -58,14 +58,7 @@ pub fn day_11_1(data: &[String], steps: usize) -> usize {
         // Now loop over all elements
         for (row, col) in (0..10).cartesian_product(0..10) {
             if array[[row, col]] > 9 {
-                flash(
-                    row,
-                    col,
-                    10,
-                    10,
-                    &mut array,
-                    &mut &mut track_flashes_in_step,
-                )
+                flash(row, col, 10, 10, &mut array, &mut track_flashes_in_step)
             }
         }
 
@@ -103,14 +96,7 @@ pub fn day_11_2(data: &[String]) -> usize {
         // Now loop over all elements
         for (row, col) in (0..10).cartesian_product(0..10) {
             if array[[row, col]] > 9 {
-                flash(
-                    row,
-                    col,
-                    10,
-                    10,
-                    &mut array,
-                    &mut &mut track_flashes_in_step,
-                )
+                flash(row, col, 10, 10, &mut array, &mut track_flashes_in_step)
             }
         }
 

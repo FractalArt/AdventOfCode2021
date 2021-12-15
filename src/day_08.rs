@@ -12,10 +12,7 @@ pub fn day_8_1(data: &[String]) -> usize {
         .map(|s| s.split('|').last().unwrap().trim())
         .map(|out| {
             out.split_whitespace()
-                .filter(|number| match number.chars().count() {
-                    2 | 3 | 4 | 7 => true,
-                    _ => false,
-                })
+                .filter(|number| matches!(number.chars().count(), 2 | 3 | 4 | 7))
                 .count()
         })
         .sum()
@@ -77,7 +74,7 @@ pub fn identify_output(data: Vec<HashSet<char>>, out: Vec<String>) -> usize {
     // Keep only the elements of four that do not appear in one
     let four: HashSet<_> = four.difference(one).collect();
 
-    let segment_1_letter = seven.difference(&one).into_iter().next().unwrap();
+    let segment_1_letter = seven.difference(one).into_iter().next().unwrap();
     *map.get_mut(segment_1_letter).unwrap() = Some(1);
 
     // Get the 3 6-segment numbers
@@ -94,11 +91,7 @@ pub fn identify_output(data: Vec<HashSet<char>>, out: Vec<String>) -> usize {
         .unwrap();
     *map.get_mut(segment_2_letter).unwrap() = Some(2);
 
-    let segment_3_letter = one
-        .into_iter()
-        .skip_while(|&c| &c == segment_2_letter)
-        .next()
-        .unwrap();
+    let segment_3_letter = one.iter().find(|&c| &c != segment_2_letter).unwrap();
     *map.get_mut(segment_3_letter).unwrap() = Some(3);
 
     // Find the segment 4 letter
@@ -109,11 +102,7 @@ pub fn identify_output(data: Vec<HashSet<char>>, out: Vec<String>) -> usize {
     *map.get_mut(segment_7_letter).unwrap() = Some(7);
 
     // Other remaining char in signal of four gives segment 6
-    let segment_6_letter = four
-        .into_iter()
-        .skip_while(|&c| &c == segment_7_letter)
-        .next()
-        .unwrap();
+    let segment_6_letter = four.into_iter().find(|&c| &c != segment_7_letter).unwrap();
     *map.get_mut(segment_6_letter).unwrap() = Some(6);
 
     // Remaining diff gives segment 5
@@ -126,7 +115,7 @@ pub fn identify_output(data: Vec<HashSet<char>>, out: Vec<String>) -> usize {
     // Remainng letter is segment 4
     let key = map
         .iter()
-        .find_map(|(k, v)| if v.is_none() { Some(k.clone()) } else { None })
+        .find_map(|(k, v)| if v.is_none() { Some(*k) } else { None })
         .unwrap();
     *map.get_mut(&key).unwrap() = Some(4);
 
@@ -137,7 +126,7 @@ pub fn identify_output(data: Vec<HashSet<char>>, out: Vec<String>) -> usize {
                 .collect::<Vec<_>>()
         })
         .map(|mut v| {
-            v.sort();
+            v.sort_unstable();
             v
         })
         .map(|vec| digit_map[&vec])

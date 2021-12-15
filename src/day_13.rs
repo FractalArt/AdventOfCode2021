@@ -55,24 +55,20 @@ fn fold(dots: Vec<(isize, isize)>, axis: &FoldAxis) -> Vec<(isize, isize)> {
 /// Count the number of visible dots on the transparent paper after the first fold.
 pub fn day_13_1(data: &[String]) -> usize {
     let (dots, axes) = get_dots_and_fold_axes(data);
-    fold(dots, &axes[0]).iter().count()
+    fold(dots, &axes[0]).len()
 }
 
 /// Get the password after all the folds.
 pub fn day_13_2(data: &[String]) -> String {
     let (dots, axes) = get_dots_and_fold_axes(data);
-    let output = axes.iter().fold(dots, |acc, ax| fold(acc, &ax));
+    let output = axes.iter().fold(dots, fold);
     let (xmax, ymax) = output.iter().last().unwrap();
 
     let mut chars = vec![];
 
     for y in 0..=*ymax {
         for x in 0..=*xmax {
-            if output
-                .iter()
-                .find(|(xx, yy)| *xx == x && *yy == y)
-                .is_some()
-            {
+            if output.iter().any(|(xx, yy)| *xx == x && *yy == y) {
                 chars.push("#")
             } else {
                 chars.push(".")

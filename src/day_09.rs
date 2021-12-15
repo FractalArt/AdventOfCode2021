@@ -47,7 +47,7 @@ fn map_basin(
     rows: usize,
     cols: usize,
     array: &Array2<u32>,
-    mut tracker: &mut Array2<u32>,
+    tracker: &mut Array2<u32>,
 ) {
     // Point itself belongs to basin
     *tracker.get_mut([row as usize, col as usize]).unwrap() = 1;
@@ -69,7 +69,7 @@ fn map_basin(
         if tracker[[*r as usize, *c as usize]] == 0 {
             // The point in question belongs to the basin
             *tracker.get_mut([*r as usize, *c as usize]).unwrap() = 1;
-            map_basin(*r, *c, rows, cols, &array, &mut tracker);
+            map_basin(*r, *c, rows, cols, array, tracker);
         }
     });
 }
