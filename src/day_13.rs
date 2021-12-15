@@ -4,7 +4,6 @@
 use itertools::Itertools;
 
 #[derive(Debug, PartialEq)]
-
 /// Define the folding
 enum FoldAxis {
     /// Fold around the vertical axis.
@@ -38,7 +37,6 @@ fn fold(dots: Vec<(isize, isize)>, axis: &FoldAxis) -> Vec<(isize, isize)> {
     match &axis {
         FoldAxis::X(z) => dots
             .into_iter()
-            // .map(|(x, y)| ( (x - *z).abs() - 1 , y))
             .map(|(x, y)| (if x < *z { x } else { z - (x - z) }, y))
             .sorted()
             .dedup()
