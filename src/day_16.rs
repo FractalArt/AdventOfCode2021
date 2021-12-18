@@ -168,7 +168,6 @@ fn parse_operator(start_index: usize, binary: &[char]) -> (Packet, usize) {
 
 /// Parse a generic packet.
 fn parse_packet(start_index: usize, binary: &[char]) -> (Packet, usize) {
-    // if start_index + 6 > binary.len() { return (Packet{ version: 0, type_id: 0, package_type: PacketType::Literal(0) } ,0); }
     match binary[start_index + 3..start_index + 6] {
         ['1', '0', '0'] => parse_literal(start_index, binary),
         _ => parse_operator(start_index, binary),
