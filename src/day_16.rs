@@ -19,6 +19,41 @@ struct Packet {
     package_type: PacketType,
 }
 
+impl Packet {
+    fn value(&self) -> usize {
+        match &self.package_type {
+            PacketType::Literal(val) => *val,
+            PacketType::Operator(packets) => match self.type_id {
+                0 => packets.iter().map(|p| p.value()).sum(),
+                1 => packets.iter().map(|p| p.value()).product(),
+                2 => packets.iter().map(|p| p.value()).min().unwrap(),
+                3 => packets.iter().map(|p| p.value()).max().unwrap(),
+                5 => {
+                    if packets[0].value() > packets[1].value() {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                6 => {
+                    if packets[0].value() < packets[1].value() {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                _ => {
+                    if packets[0].value() == packets[1].value() {
+                        1
+                    } else {
+                        0
+                    }
+                }
+            },
+        }
+    }
+}
+
 /// Convert the hexadecimal input format to binary.
 fn convert_hex_to_binary(hex: &str) -> Vec<char> {
     hex.chars()
@@ -191,6 +226,13 @@ pub fn day_16_1(data: &[String]) -> usize {
     sum_versions(&packet)
 }
 
+/// Return the value of the input packet.
+pub fn day_16_2(data: &[String]) -> usize {
+    let binary = convert_hex_to_binary(&data[0]);
+    let (packet, _) = parse_packet(0, &binary);
+    packet.value()
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -259,5 +301,26 @@ mod tests {
 
         let data = vec!["A0016C880162017C3686B18A3D4780".to_string()];
         assert_eq!(day_16_1(&data), 31);
+    }
+
+    #[test]
+    fn test_day_16_2() {
+        let data = vec!["9C0141080250320F1802104A08".to_string()];
+        assert_eq!(day_16_2(&data), 1);
+
+        let data = vec!["C200B40A82".to_string()];
+        assert_eq!(day_16_2(&data), 3);
+
+        let data = vec!["04005AC33890".to_string()];
+        assert_eq!(day_16_2(&data), 54);
+
+        let data = vec!["880086C3E88112".to_string()];
+        assert_eq!(day_16_2(&data), 7);
+
+        let data = vec!["CE00C43D881120".to_string()];
+        assert_eq!(day_16_2(&data), 9);
+
+        let data = vec!["9C005AC2F8F0".to_string()];
+        assert_eq!(day_16_2(&data), 0);
     }
 }

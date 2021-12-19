@@ -21,7 +21,7 @@ My solutions to the [AOC 2021](https://adventofcode.com/2021) problems in [Rust]
 | Day 13 | :heavy_check_mark:, :heavy_check_mark: |
 | Day 14 | :heavy_check_mark:, :heavy_check_mark: |
 | Day 15 | :x:, :x: |
-| Day 16 | :heavy_check_mark:, :x: |
+| Day 16 | :heavy_check_mark:, :heavy_check_mark: |
 
 ***
 
