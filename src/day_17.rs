@@ -104,6 +104,18 @@ pub fn day_17_1(x_min: isize, x_max: isize, y_min: isize, y_max: isize) -> isize
         .unwrap()
 }
 
+pub fn day_17_2(x_min: isize, x_max: isize, y_min: isize, y_max: isize) -> usize {
+    let vxstart = (x_min as f64).sqrt() as isize;
+    let vystart = y_min;
+    let vxend = x_max + 1;
+    let vyend = -y_min;
+
+    (vxstart..=vxend)
+        .cartesian_product(vystart..=vyend)
+        .filter_map(|(vx, vy)| simulate(vx, vy, x_min, x_max, y_min, y_max))
+        .count()
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -120,5 +132,10 @@ mod tests {
     #[test]
     fn test_day_17_1() {
         assert_eq!(day_17_1(20, 30, -10, -5), 45);
+    }
+
+    #[test]
+    fn test_day_17_2() {
+        assert_eq!(day_17_2(20, 30, -10, -5), 112);
     }
 }
