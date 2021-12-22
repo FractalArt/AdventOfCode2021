@@ -69,7 +69,7 @@ fn simulate(
         vx += match vx {
             v if v > 0 => -1,
             v if v < 0 => 1,
-            _ => 0
+            _ => 0,
         };
         vy -= 1;
 
